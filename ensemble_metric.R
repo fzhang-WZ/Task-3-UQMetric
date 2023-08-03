@@ -84,7 +84,6 @@ dis_ensemble <- function(df) {
   CRPS_all <- scoringRules::crps.numeric(df[, 'Actual'], family = 'norm', mean = ens_quantile[, 'Q50'], sd = stand_dev)
   nCRPS <- mean(CRPS_all)/max(df$Actual)
   
-  #result <- as.matrix(cbind(nCRPS, pb_ave, npb_ave, ACE, CE_98, reliability, sharpness))
   result <- list('SI' = si_ens,  'PI' = pi_ens, 'CRPS' = nCRPS)
   
   return(result)
