@@ -43,7 +43,7 @@ mv_single <- function(df) {
     ti_era[i] <- sd(df$ERA[i:(i+12)])/mean(df$ERA[i:(i+12)])
     ti_obs[i] <- sd(df$OBS[i:(i+12)])/mean(df$OBS[i:(i+12)])
   } 
-  #result <- as.matrix(cbind(nCRPS, pb_ave, npb_ave, ACE, CE_98, reliability, sharpness))
+  #result <- as.matrix(cbind(entropy, sd, ti, vi))
   result <- list('entropy' = cbind(en_era, en_obs),  'sd' = cbind(sd_era, sd_obs), 
                  'ti' = cbind(ti_era, ti_obs), 'vi' = cbind(vi_era, vi_obs))
   
