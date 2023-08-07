@@ -40,8 +40,8 @@ mv_single <- function(df) {
   vi_era <- c()
   vi_obs <- c()
   for (i in 1:(dim(df)[1]-12)){
-    ti_era[i] <- sd(df$ERA[i:(i+12)])/mean(df$ERA[i:(i+12)])
-    ti_obs[i] <- sd(df$OBS[i:(i+12)])/mean(df$OBS[i:(i+12)])
+    vi_era[i] <- sd(df$ERA[i:(i+12)])/mean(df$ERA[i:(i+12)])
+    vi_obs[i] <- sd(df$OBS[i:(i+12)])/mean(df$OBS[i:(i+12)])
   } 
   #result <- as.matrix(cbind(entropy, sd, ti, vi))
   result <- list('entropy' = cbind(en_era, en_obs),  'sd' = cbind(sd_era, sd_obs), 
