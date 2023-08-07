@@ -16,25 +16,25 @@ mw_ensemble <- function(df){
   # Moving-window Correlation
   cor_ens <- c()
   for (i in 1:(dim(df)[1]-12)){
-     cor_ens <- cor(df$ens1, df$ensN,use = "pairwise.complete.obs")
+     cor_ens[i] <- cor(df$ens1, df$ensN,use = "pairwise.complete.obs")
   } 
 
   # Moving-window MAPE
   mape_ens <- c()
   for (i in 1:(dim(df)[1]-12)){
-     mape_ens <- MAPE(df$ens1, df$ensN)
+     mape_ens[i] <- MAPE(df$ens1, df$ensN)
   } 
   
   # Moving-window nRMSE
   nRMSE_ens <- c()
   for (i in 1:(dim(df)[1]-12)){
-     nRMSE_ens <- nrmse(df$ens1, df$ensN)
+     nRMSE_ens[i] <- nrmse(df$ens1, df$ensN)
   } 
     
   # Moving-window nMAE
   nMAE_ens <- c()
   for (i in 1:(dim(df)[1]-12)){
-     nMAE_ens <- mean(abs(df$ens1-df$ensN))/12
+     nMAE_ens[i] <- mean(abs(df$ens1-df$ensN))/12
   } 
   
   result <- list('correlation' = cor_ens,  'MAPE' = mape_ens, 
