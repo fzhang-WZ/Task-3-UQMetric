@@ -1,8 +1,8 @@
 # Task-3-UQMetric
-The UQ metrics are categorized in three parts: single time series, ensemble member, and multiple time series. 
+The UQ metrics are categorized in three parts: temporal uncertainty, spatial uncertainty, and multiple data sources uncertainty. 
 - For temporal uncertainty, we consider moving-window based metrics instead of point to point metrics. These metrics reflect the informativeness of the given data.
 - For spatial uncertainty, we quantify the uncertainty from wind farm turbine layout. The uncertainty among turbines is converted to a function between uncertainty and distance. 
-- For ensemble members, we quantify uncertainty from multiple ensemble data sources.
+- For uncertainty among multiple data sources, we quantify how the uncertainty spreads among multiple data sources.
   
 UQ metric is summarized as follows:
 <table>
