@@ -16,8 +16,8 @@ UQ metric is summarized as follows:
     </thead>
     <tbody>
                 <tr>
-            <td rowspan=9>Temporal Uncertainty</td>
-            <td rowspan=8>Moving-window</td>
+            <td rowspan=4>Temporal Uncertainty</td>
+            <td rowspan=4>Moving-window</td>
             <td>Entropy</td>
             <td>Quantify the uncertainty based on information in the given moving window</td>
         </tr>
@@ -33,23 +33,6 @@ UQ metric is summarized as follows:
             <td>Variability Index</td>
             <td>Measure the standardized maximum difference in the given moving window</td>
         </tr>
-        <tr>
-            <td>Correlation</td>
-            <td>Linear correlation between one data source and the actual</td>
-        </tr>
-        <tr> 
-            <td>MAPE</td>
-            <td>The average deviation between one data source and the actual</td>
-        </tr>
-        <tr>
-            <td>nRMSE</td>
-            <td>The average weighted performance between one data source and the actual</td>
-        </tr>
-        <tr>
-            <td>nMAE</td>
-            <td>The average difference between one data source and the actual</td>
-        </tr>
-        <tr>
         <tr>
             <td rowspan=3>Spatial Uncertainty</td>
             <td rowspan=3>Spatial</td>
