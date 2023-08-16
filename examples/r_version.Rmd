@@ -1,0 +1,118 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#--------------------------------  NOTE  ----------------------------------------
+# 1 This code is to quantify single time series uncertainty based on different data sources;
+# 2 The format of the input data is [ERA OBS];
+# 3 Coder: Flora Zhang         Date: 08/02/2023       @ NREL
+#--------------------------------------------------------------------------------
+## packages double check
+
+```{r}
+temporal <- function(df) {
+  library(ForeCA)
+  library(fields)
+  library(imputeTestbench)
+  library(zoo)
+  library(MLmetrics)
+  library(zoo)
+  library(ForeCA)
+  library(fields)
+  library(hydroGOF)
+  # df <- data.frame(dataset[,c('ERA', 'OBS')])
+  # window size: 12
+  
+  # Moving-window Entropy
+  en_era <- c()
+  en_obs <- c()
+  for (i in 1:(dim(df)[1]-12+1)){
+    en_era[i] <- ForeCA::spectral_entropy(df$ERA[i:(i+11)])
+    en_obs[i] <- ForeCA::spectral_entropy(df$OBS[i:(i+11)])
+  } 
+  
+  # Moving-window Standard Deviation
+  sd_era <- c()
+  sd_obs <- c()
+  for (i in 1:(dim(df)[1]-12+1)){
+    sd_era[i] <- sd(df$ERA[i:(i+11)])
+    sd_obs[i] <- sd(df$OBS[i:(i+11)])
+  } 
+  
+  # Moving-window Turbulence Intensity
+  ti_era <- c()
+  ti_obs <- c()
+  for (i in 1:(dim(df)[1]-12+1)){
+    ti_era[i] <- (max(df$ERA[i:(i+11)])-min(df$ERA[i:(i+11)]))/mean(df$ERA[i:(i+11)])
+    ti_obs[i] <- (max(df$OBS[i:(i+11)])-min(df$OBS[i:(i+11)]))/mean(df$OBS[i:(i+11)])
+  } 
+  
+  # Moving-window Variability Index
+  vi_era <- c()
+  vi_obs <- c()
+  for (i in 1:(dim(df)[1]-12+1)){
+    vi_era[i] <- sd(df$ERA[i:(i+11)])/mean(df$ERA[i:(i+11)])
+    vi_obs[i] <- sd(df$OBS[i:(i+11)])/mean(df$OBS[i:(i+11)])
+  } 
+  
+  #result <- list('entropy' = cbind(en_era, en_obs),  'sd' = cbind(sd_era, sd_obs), 
+  #               'ti' = cbind(ti_era, ti_obs), 'vi' = cbind(vi_era, vi_obs))
+  result <- as.matrix(cbind(en_era, en_obs, sd_era, sd_obs, ti_era, ti_obs,vi_era, vi_obs))
+  colnames(result) <- c('entropy_era', 'entropy_obs','sd_era', 'sd_obs','ti_era','ti_obs','vi_era', 'vi_obs')
+  return(result)
+}
+```
+
+Here we load the Argonne example data. Note that:
+1. The in situ measurement does include some missing values. So we linearly interpolate these missing values. 
+2. We compute the metrics based on ERA5 and observations, separately. 
+```{r}
+argonne2018 <- read.csv("~/Desktop/sample_data/il_argonne_10m_2018.csv")
+df <- data.frame(ERA = argonne2018$ERA510m, OBS = na.approx(argonne2018$Obs10m))
+result <- data.frame(temporal(df))
+result
+```
+
+Here we visualize the pairwise metrics based on ERA5 and observation in heatmaps. These heatmaps are by hour of the day and by day of the year so that we could see both the diurnal and seasonal patterns from these metrics.  
+```{r}
+en_era <- result$entropy_era
+en_obs <- result$entropy_obs
+sd_era <- result$sd_era
+sd_obs <- result$sd_obs
+ti_era <- result$ti_era
+ti_obs <- result$ti_obs
+vi_era <- result$vi_era
+vi_obs <- result$vi_obs
+
+en_era.matrix <- matrix(en_era, nrow = 365, ncol = 24)
+sd_era.matrix <- matrix(sd_era, nrow = 365, ncol = 24)
+ti_era.matrix <- matrix(ti_era, nrow = 365, ncol = 24)
+vi_era.matrix <- matrix(vi_era, nrow = 365, ncol = 24)
+
+en_obs.matrix <- matrix(en_obs, nrow = 365, ncol = 24)
+sd_obs.matrix <- matrix(sd_obs, nrow = 365, ncol = 24)
+ti_obs.matrix <- matrix(ti_obs, nrow = 365, ncol = 24)
+vi_obs.matrix <- matrix(vi_obs, nrow = 365, ncol = 24)
+
+set.panel(4,2)
+image.plot(1:365, 1:24, en_era.matrix, xlab = "day", ylab = "hour", main = "Entropy")
+image.plot(1:365, 1:24, en_obs.matrix, xlab = "day", ylab = "hour", main = "Entropy")
+
+image.plot(1:365, 1:24, sd_era.matrix, xlab = "day", ylab = "hour", main = "Standard Deviation")
+image.plot(1:365, 1:24, sd_obs.matrix, xlab = "day", ylab = "hour", main = "Standard Deviation")
+
+image.plot(1:365, 1:24, ti_era.matrix, xlab = "day", ylab = "hour", main = "Turbulence Intensity")
+image.plot(1:365, 1:24, ti_obs, xlab = "day", ylab = "hour", main = "Turbulence Intensity")
+
+image.plot(1:365, 1:24, vi_era.matrix, xlab = "day", ylab = "hour", main = "Variability Index")
+image.plot(1:365, 1:24, vi_obs.matrix, xlab = "day", ylab = "hour", main = "Variability Index")
+```
+Besides visualization, we also want to quantify the difference/similarity between metrics calculates based on ERA5 and observations. Here we adopt cosine similarity where the values closer to one indicates similarity and the values closer to zero indicates the two vectors are orthogonal. 
+```{r}
+library(lsa)
+cosine(en_era, en_obs)
+cosine(sd_era, sd_obs)
+cosine(ti_era, ti_obs)
+cosine(vi_era, vi_obs)
+```
